@@ -1,2 +1,32 @@
 ---
-# tasks file for ansible-role-firewall
+# tasks file for role
+
+- name: Ensure firewalld running
+  become: true
+  ansible.builtin.service:
+    name: firewalld
+    enabled: true
+    state: started
+
+- name: Ensure public zone exists
+  ansible.posix.firewalld:
+    zone: public
+    state: present
+    target: default
+    permanent: true
+
+- name: Allow SSH in public zone
+  ansible.posix.firewalld:
+    service: ssh
+    zone: public
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: Allow prometheus node_exporter
+  ansible.posix.firewalld:
+    port: 9100/tcp
+    zone: public
+    permanent: true
+    state: enabled
+    immediate: true 
